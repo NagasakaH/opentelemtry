@@ -1,0 +1,15 @@
+/home/example/git/opentelemtry/TracingSample/src/TracingSample.Core/bin/Debug/net8.0/TracingSample.Core.deps.json
+/home/example/git/opentelemtry/TracingSample/src/TracingSample.Core/bin/Debug/net8.0/TracingSample.Core.dll
+/home/example/git/opentelemtry/TracingSample/src/TracingSample.Core/bin/Debug/net8.0/TracingSample.Core.pdb
+/home/example/git/opentelemtry/TracingSample/src/TracingSample.Core/bin/Debug/net8.0/TracingSample.Tracing.dll
+/home/example/git/opentelemtry/TracingSample/src/TracingSample.Core/bin/Debug/net8.0/TracingSample.Tracing.pdb
+/home/example/git/opentelemtry/TracingSample/src/TracingSample.Core/obj/Debug/net8.0/TracingSample.Core.csproj.AssemblyReference.cache
+/home/example/git/opentelemtry/TracingSample/src/TracingSample.Core/obj/Debug/net8.0/TracingSample.Core.GeneratedMSBuildEditorConfig.editorconfig
+/home/example/git/opentelemtry/TracingSample/src/TracingSample.Core/obj/Debug/net8.0/TracingSample.Core.AssemblyInfoInputs.cache
+/home/example/git/opentelemtry/TracingSample/src/TracingSample.Core/obj/Debug/net8.0/TracingSample.Core.AssemblyInfo.cs
+/home/example/git/opentelemtry/TracingSample/src/TracingSample.Core/obj/Debug/net8.0/TracingSample.Core.csproj.CoreCompileInputs.cache
+/home/example/git/opentelemtry/TracingSample/src/TracingSample.Core/obj/Debug/net8.0/TracingSample.Core.csproj.CopyComplete
+/home/example/git/opentelemtry/TracingSample/src/TracingSample.Core/obj/Debug/net8.0/TracingSample.Core.dll
+/home/example/git/opentelemtry/TracingSample/src/TracingSample.Core/obj/Debug/net8.0/refint/TracingSample.Core.dll
+/home/example/git/opentelemtry/TracingSample/src/TracingSample.Core/obj/Debug/net8.0/TracingSample.Core.pdb
+/home/example/git/opentelemtry/TracingSample/src/TracingSample.Core/obj/Debug/net8.0/ref/TracingSample.Core.dll
