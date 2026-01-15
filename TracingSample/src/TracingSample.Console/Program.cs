@@ -44,6 +44,9 @@ builder.Logging.SetMinimumLevel(LogLevel.Information);
 
 var host = builder.Build();
 
+// ホストを開始（OpenTelemetryが初期化される）
+await host.StartAsync();
+
 // アプリケーション実行
 using (var scope = host.Services.CreateScope())
 {
@@ -141,3 +144,6 @@ using (var scope = host.Services.CreateScope())
 
     logger.LogInformation("トレースデータの送信が完了しました");
 }
+
+// ホストを停止
+await host.StopAsync();

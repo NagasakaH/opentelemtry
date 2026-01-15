@@ -55,7 +55,8 @@ public class TracingProxy<T> : DispatchProxy where T : class
             ? traceAttribute.Name
             : $"{targetMethod.DeclaringType?.Name}.{targetMethod.Name}";
 
-        using var activity = _activitySource.StartActivity(activityName, ActivityKind.Internal);
+        // ★修正: using を使わず、手動で管理
+        var activity = _activitySource.StartActivity(activityName, ActivityKind.Internal);
 
         try
         {
@@ -72,12 +73,14 @@ public class TracingProxy<T> : DispatchProxy where T : class
             // メソッドを実行
             var result = targetMethod.Invoke(_target, args);
 
-            // 非同期メソッドの場合
+            // ★修正: 非同期メソッドの場合はActivityの終了を委譲
             if (result is Task task)
             {
+                // activity を HandleAsyncMethod に渡し、そこで終了させる
                 return HandleAsyncMethod(task, result, activity, traceAttribute);
             }
 
+            // 同期メソッドの場合
             // 戻り値を記録
             if (traceAttribute.RecordReturnValue && result != null)
             {
@@ -85,6 +88,10 @@ public class TracingProxy<T> : DispatchProxy where T : class
             }
 
             activity?.SetStatus(ActivityStatusCode.Ok);
+            
+            // ★修正: 同期メソッドの場合はここでDispose
+            activity?.Dispose();
+            
             return result;
         }
         catch (TargetInvocationException ex) when (ex.InnerException != null)
@@ -95,7 +102,82 @@ public class TracingProxy<T> : DispatchProxy where T : class
                 RecordException(activity, ex.InnerException);
             }
             activity?.SetStatus(ActivityStatusCode.Error, ex.InnerException.Message);
+            
+            // ★修正: 例外時もDispose
+            activity?.Dispose();
+            
             throw ex.InnerException;
+        }
+        catch (Exception ex)
+        {
+            if (traceAttribute.RecordException)
+            {
+                RecordException(activity, ex);
+            }
+            activity?.SetStatus(ActivityStatusCode.Error, ex.Message);
+            
+            // ★修正: 例外時もDispose
+            activity?.Dispose();
+            
+            throw;
+        }
+    }
+
+    private static object HandleAsyncMethod(Task task, object result, Activity? activity, TraceAttribute traceAttribute)
+    {
+        var resultType = result.GetType();
+
+        // Task<T>の場合（基底型を含めてチェック）
+        var taskGenericType = FindTaskGenericType(resultType);
+        if (taskGenericType != null)
+        {
+            var continueMethod = typeof(TracingProxy<T>)
+                .GetMethod(nameof(ContinueWithResult), BindingFlags.NonPublic | BindingFlags.Static)?
+                .MakeGenericMethod(taskGenericType.GetGenericArguments()[0]);
+
+            return continueMethod?.Invoke(null, new object[] { result, activity!, traceAttribute })
+                ?? throw new InvalidOperationException("Failed to invoke ContinueWithResult");
+        }
+
+        // ★修正: Task (非ジェネリック)の場合も適切にActivityを終了
+        return ContinueWithTask(task, activity, traceAttribute);
+    }
+
+    // ★新規追加: Task<T>型を基底型から探す
+    private static Type? FindTaskGenericType(Type type)
+    {
+        // 直接チェック
+        if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Task<>))
+        {
+            return type;
+        }
+
+        // 基底型をチェック
+        var baseType = type.BaseType;
+        while (baseType != null)
+        {
+            if (baseType.IsGenericType && baseType.GetGenericTypeDefinition() == typeof(Task<>))
+            {
+                return baseType;
+            }
+            baseType = baseType.BaseType;
+        }
+
+        return null;
+    }
+
+    // ★新規追加: 非ジェネリックTask用のメソッド
+    private static async Task ContinueWithTask(Task task, Activity? activity, TraceAttribute traceAttribute)
+    {
+        try
+        {
+            await task;
+            activity?.SetStatus(ActivityStatusCode.Ok);
+        }
+        catch (TaskCanceledException)
+        {
+            activity?.SetStatus(ActivityStatusCode.Error, "Task was canceled");
+            throw;
         }
         catch (Exception ex)
         {
@@ -106,49 +188,14 @@ public class TracingProxy<T> : DispatchProxy where T : class
             activity?.SetStatus(ActivityStatusCode.Error, ex.Message);
             throw;
         }
-    }
-
-    private static object HandleAsyncMethod(Task task, object result, Activity? activity, TraceAttribute traceAttribute)
-    {
-        var resultType = result.GetType();
-
-        // Task<T>の場合
-        if (resultType.IsGenericType && resultType.GetGenericTypeDefinition() == typeof(Task<>))
+        finally
         {
-            var continueMethod = typeof(TracingProxy<T>)
-                .GetMethod(nameof(ContinueWithResult), BindingFlags.NonPublic | BindingFlags.Static)?
-                .MakeGenericMethod(resultType.GetGenericArguments()[0]);
-
-            return continueMethod?.Invoke(null, new object[] { result, activity!, traceAttribute })
-                ?? throw new InvalidOperationException("Failed to invoke ContinueWithResult");
+            // ★重要: Task完了後にActivityをDispose
+            activity?.Dispose();
         }
-
-        // Task (非ジェネリック)の場合
-        _ = task.ContinueWith(t =>
-        {
-            if (t.IsFaulted && t.Exception != null)
-            {
-                if (traceAttribute.RecordException)
-                {
-                    RecordException(activity, t.Exception.GetBaseException());
-                }
-                activity?.SetStatus(ActivityStatusCode.Error, t.Exception.GetBaseException().Message);
-            }
-            else if (t.IsCanceled)
-            {
-                activity?.SetStatus(ActivityStatusCode.Error, "Task was canceled");
-            }
-            else
-            {
-                activity?.SetStatus(ActivityStatusCode.Ok);
-            }
-        }, TaskContinuationOptions.ExecuteSynchronously);
-
-        // 元のタスクを返す（Continuationタスクではなく）
-        return task;
     }
 
-    private static async Task<TResult> ContinueWithResult<TResult>(Task<TResult> task, Activity activity, TraceAttribute traceAttribute)
+    private static async Task<TResult> ContinueWithResult<TResult>(Task<TResult> task, Activity? activity, TraceAttribute traceAttribute)
     {
         try
         {
@@ -175,6 +222,11 @@ public class TracingProxy<T> : DispatchProxy where T : class
             }
             activity?.SetStatus(ActivityStatusCode.Error, ex.Message);
             throw;
+        }
+        finally
+        {
+            // ★追加: Task完了後にActivityをDispose
+            activity?.Dispose();
         }
     }
 
