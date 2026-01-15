@@ -1,0 +1,48 @@
+{
+  "name": "OpenTelemetry .NET 8 Development",
+  "dockerComposeFile": [
+    "docker-compose.yml"
+  ],
+  "service": "app",
+  "workspaceFolder": "/workspaces/opentelemtry",
+  "features": {
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {},
+    "./tree-sitter": {},
+    "./luarocks": {},
+    "./claude-code": {},
+    "./copilot-cli": {},
+    "./easydotnet": {
+      "version": "2.2.29"
+    },
+    "ghcr.io/duduribeiro/devcontainer-features/neovim:1": {
+      "version": "stable"
+    },
+    "ghcr.io/jungaretti/features/ripgrep:1": {},
+    "ghcr.io/devcontainers-community/features/deno": {},
+    "ghcr.io/devcontainers/features/node:1": {},
+    "ghcr.io/devcontainers-extra/features/tmux-apt-get:1": {}
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-dotnettools.csharp",
+        "ms-dotnettools.csdevkit",
+        "ms-azuretools.vscode-docker",
+        "eamodio.gitlens",
+        "formulahendry.dotnet-test-explorer",
+        "kreativ-software.csharpextensions",
+        "patcx.vscode-nuget-gallery",
+        "jmrog.vscode-nuget-package-manager",
+        "humao.rest-client",
+        "redhat.vscode-yaml"
+      ],
+      "settings": {
+        "dotnet.defaultSolution": "TracingSample/TracingSample.sln",
+        "omnisharp.enableRoslynAnalyzers": true,
+        "omnisharp.enableEditorConfigSupport": true
+      }
+    }
+  },
+  "remoteUser": "vscode",
+  "postCreateCommand": "bash -c 'for dir in /workspaces/*/; do if [ -f \"$dir\"*.sln ] || [ -f \"$dir\"*.csproj ]; then cd \"$dir\" && dotnet restore && break; fi; done' && bash -c 'for dir in /workspaces/*/; do if [ -f \"$dir\"*.sln ] || [ -f \"$dir\"*.csproj ]; then cd \"$dir\" && dotnet restore && break; fi; done'"
+}
