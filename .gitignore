@@ -1,0 +1,244 @@
+# =============================================================================
+# .NET / C# Project .gitignore
+# =============================================================================
+# このファイルは以下の技術スタック用に設計されています:
+# - .NET 8.0 (C#)
+# - Docker / Docker Compose
+# - Visual Studio Code (devcontainer)
+# - OpenTelemetry
+# - Jaeger
+# =============================================================================
+
+# =============================================================================
+# 1. .NET / C# 関連
+# =============================================================================
+
+# ビルド出力ディレクトリ
+bin/
+obj/
+
+# コンパイル済みファイル
+*.dll
+*.exe
+*.pdb
+*.mdb
+
+# NuGet関連
+*.nupkg
+*.snupkg
+packages/
+*.nuget.props
+*.nuget.targets
+project.lock.json
+project.fragment.lock.json
+
+# .NET Core
+*.deps.json
+*.runtimeconfig.json
+*.runtimeconfig.dev.json
+
+# ASP.NET Scaffolding
+ScaffoldingReadMe.txt
+
+# StyleCop
+StyleCopReport.xml
+
+# 公開/デプロイ出力
+publish/
+[Pp]ublish/
+
+# =============================================================================
+# 2. Visual Studio 関連
+# =============================================================================
+
+# Visual Studioディレクトリ
+.vs/
+_ReSharper*/
+*.[Rr]e[Ss]harper
+*.DotSettings.user
+
+# ユーザー固有ファイル
+*.user
+*.userosscache
+*.sln.docstates
+*.suo
+
+# Mono Auto Generated Files
+mono_crash.*
+
+# Windows Installer files
+*.cab
+*.msi
+*.msm
+*.msp
+
+# クリックワンス manifest
+*.application
+*.manifest
+
+# NCrunch
+*.ncrunchsolution
+*.ncrunchproject
+_NCrunch_*
+
+# =============================================================================
+# 3. Visual Studio Code / IDE 関連
+# =============================================================================
+
+# Visual Studio Code
+.vscode/
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
+
+# JetBrains Rider / IntelliJ IDEA
+.idea/
+*.sln.iml
+
+# =============================================================================
+# 4. OS 関連
+# =============================================================================
+
+# macOS
+.DS_Store
+.DS_Store?
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+Icon
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+desktop.ini
+[Dd]esktop.ini
+$RECYCLE.BIN/
+*.lnk
+
+# Linux
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+.nfs*
+
+# =============================================================================
+# 5. ビルド・一時ファイル
+# =============================================================================
+
+# ログファイル
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# 一時ファイル
+tmp/
+temp/
+.tmp/
+.temp/
+*.tmp
+*.temp
+*.bak
+*.swp
+
+# テスト結果・カバレッジ
+coverage/
+TestResults/
+[Cc]overage/
+*.coverage
+*.coveragexml
+lcov.info
+coverlet/
+*.trx
+
+# BenchmarkDotNet
+BenchmarkDotNet.Artifacts/
+
+# =============================================================================
+# 6. 環境ファイル・設定ファイル
+# =============================================================================
+
+# 環境変数ファイル (.env.exampleは除外しない)
+.env
+.env.local
+.env.*.local
+!.env.example
+!.env.sample
+
+# ASP.NET Core appsettings
+# 注意: appsettings.jsonとappsettings.Development.jsonは含める
+appsettings.Production.json
+appsettings.Staging.json
+appsettings.Local.json
+secrets.json
+
+# ユーザーシークレット
+!appsettings.json
+!appsettings.Development.json
+
+# =============================================================================
+# 7. Docker 関連
+# =============================================================================
+
+# Docker関連の一時ファイル (通常はイメージ/コンテナはGit管理外)
+# docker-compose.override.yml はローカル開発用に除外
+docker-compose.override.yml
+
+# =============================================================================
+# 8. その他
+# =============================================================================
+
+# パフォーマンスプロファイラー
+*.psess
+*.vsp
+*.vspx
+*.sap
+
+# MiniProfiler
+App_Data/*.mdf
+
+# Entity Framework Migrations
+*.mdf
+*.ldf
+
+# Service Fabric files
+PublishProfiles/
+ClusterManifest.xml
+ApplicationManifest.xml
+ApplicationPackageRoot/
+
+# Backup files
+*.orig
+
+# Microsoft Fakes
+FakesAssemblies/
+
+# Node.js (もしフロントエンドがある場合)
+node_modules/
+
+# Python (もし使用する場合)
+__pycache__/
+*.py[cod]
+*$py.class
+.Python
+venv/
+.venv/
+
+# =============================================================================
+# 9. プロジェクト固有 (OpenTelemetry / Jaeger)
+# =============================================================================
+
+# Jaeger の一時データ (ローカル実行時)
+jaeger-data/
+
+# OpenTelemetry エクスポートされたトレース (デバッグ用)
+traces/
+*.otlp
